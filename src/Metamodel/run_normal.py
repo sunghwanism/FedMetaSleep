@@ -24,7 +24,8 @@ def run_model():
     # Initialize seed if specified (might slow down the model)
     seed = 1000
     torch.manual_seed(seed)
-    device = torch.cuda.set_device("cuda:0" if torch.cuda.is_available() else "cpu")
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    print("Device: ", device)
     
     epochs = 300
     batch_size = 512
