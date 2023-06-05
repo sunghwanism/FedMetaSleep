@@ -21,34 +21,37 @@ class LeNet(torch.nn.Module):
     """
     def __init__(self, output_dim):
         super().__init__()
-        self.input_dim = 32 * 32 * 3
+        self.input_dim = 2
         self.output_dim = output_dim
 
         self.features = torch.nn.Sequential(
-            torch.nn.Conv2d(3, 6, kernel_size=5),
-            torch.nn.BatchNorm2d(6),
+            torch.nn.Conv1d(in_channels=self.input_dim, out_channels=64, kernel_size=7, padding=3),
+            torch.nn.BatchNorm1d(64),
             torch.nn.ReLU(),
-            torch.nn.MaxPool2d(kernel_size=2, stride=2),
-            torch.nn.Conv2d(6, 16, kernel_size=5),
-            torch.nn.BatchNorm2d(16),
+            torch.nn.MaxPool1d(kernel_size=2),
+            torch.nn.Conv1d(in_channels=64, out_channels=128, kernel_size=7, padding=3),
+            torch.nn.BatchNorm1d(128),
             torch.nn.ReLU(),
-            torch.nn.MaxPool2d(kernel_size=2, stride=2)
+            torch.nn.MaxPool1d(kernel_size=2),
+            torch.nn.Conv1d(in_channels=128, out_channels=256, kernel_size=7, padding=3),
+            torch.nn.BatchNorm1d(256),
+            torch.nn.ReLU(),
+            torch.nn.MaxPool1d(kernel_size=2)
         )
         self.classifier = torch.nn.Sequential(
-            torch.nn.Linear(16 * 5 * 5, 120),
-            torch.nn.BatchNorm1d(120),
+            torch.nn.Linear(768, 128),
+            torch.nn.BatchNorm1d(128),
             torch.nn.ReLU(),
-            torch.nn.Linear(120, 84),
-            torch.nn.BatchNorm1d(84),
+            torch.nn.Linear(128, 64),
+            torch.nn.BatchNorm1d(64),
             torch.nn.ReLU(),
-            torch.nn.Linear(84, output_dim)
+            torch.nn.Linear(64, output_dim)
         )
 
     def forward(self, x):
         # Compute features using convolutional layers
         x = self.features(x)
         activation = [x]
-
         # Compute classification using fully-connected layers
         x = x.view(x.size(0), -1)
         x = self.classifier(x)
