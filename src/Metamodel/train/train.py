@@ -157,19 +157,19 @@ def train_augmented(meta_model, num_steps, optimizer, train_loader, energy_funct
             scheduler.step()
 
         # Logging
-        if verbose and (step == 0 or (step + 1) % int(num_steps / 10) == 0):
-            # HACK: Keeping track of global time by storing a variable in config.writer
-            try:
-                config.writer.relaxation_step += 1
-            except AttributeError:
-                config.writer.relaxation_step = 0
-            config.writer.add_scalars('relaxation', {'energy': energy, 'cost': cost}, config.writer.relaxation_step)
+        # if verbose and (step == 0 or (step + 1) % int(num_steps / 10) == 0):
+        #     # HACK: Keeping track of global time by storing a variable in config.writer
+        #     try:
+        #         config.writer.relaxation_step += 1
+        #     except AttributeError:
+        #         config.writer.relaxation_step = 0
+        #     config.writer.add_scalars('relaxation', {'energy': energy, 'cost': cost}, config.writer.relaxation_step)
 
-            with torch.no_grad():
-                grad_norm = torch.linalg.norm(torch.cat([p.grad.view(-1) for p in meta_model.base_parameters()]))
+        #     with torch.no_grad():
+        #         grad_norm = torch.linalg.norm(torch.cat([p.grad.view(-1) for p in meta_model.base_parameters()]))
 
-            logging.info("step: {}/{} \t total_energy: {:4f} \t energy: {:4f} \t cost: {:4f} \t grad_norm: {:4f}".format(
-                step + 1, num_steps, total_energy, energy, cost, grad_norm))
+        #     logging.info("step: {}/{} \t total_energy: {:4f} \t energy: {:4f} \t cost: {:4f} \t grad_norm: {:4f}".format(
+        #         step + 1, num_steps, total_energy, energy, cost, grad_norm))
 
     # Compute the gradient norm as a proxy for how close we got to a fixed point
     grad_norm = torch.linalg.norm(torch.cat([p.grad.view(-1) for p in meta_model.base_parameters()]))

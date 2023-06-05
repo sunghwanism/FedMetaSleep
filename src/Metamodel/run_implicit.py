@@ -32,31 +32,32 @@ import utils
 
 from utils import config
 
+from models.depthwiseNet import DepthNet
+
 
 def run_implicit(raytune=False):
-    
-    meta_method = "cg"
-    
+        
     # Initialize seed if specified (might slow down the model)
     seed = 1000
     torch.manual_seed(seed)
-    device = torch.cuda.set_device("cuda:0" if torch.cuda.is_available() else "cpu")
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     
     batch_size = 512
-    database = "../data"
+    database = "../../data/padding"
 
     # Create the training, validation and test dataloader
-    train_loader, valid_loader = create_train_val_loader(database, batch_size)
+    train_loader, valid_loader = create_train_val_loader(database, batch_size, length=30)
 
     # Initialise the model
     # NOTE: Hard-coded output_dim as all datasets considered so far have 10 outputs
-    model = models.LeNet(output_dim=10).to(device)
+    # model = models.LeNet(output_dim=10).to(device)
+    model = DepthNet(lengths=30, patch_size=1, in_chans=5, embed_dim=256, norm_layer=None).to(device)
     
     
     # Initialise the implicit gradient approximation method
     ############################################################
     # Configure
-    
+    meta_method = "cg"
     cg_steps = 100
     
     nsa_steps = 500
@@ -64,14 +65,14 @@ def run_implicit(raytune=False):
     
     init_l2 = 1e-05
     inner_init = "fixed_seed"
-    optimizer_outer = "adam"
+    optimizer_outer = "sgd"
     lr_outer = 0.001
     lr_inner = 0.001
     
     steps_inner = 2000
     steps_outer = 100
     
-    optimizer_inner = "sgd_nesterov"
+    optimizer_inner_type = "sgd_nesterov"
     ############################################################
     if meta_method == "cg":
         implicit_gradient = meta.ConjugateGradient(cg_steps)
@@ -113,9 +114,7 @@ def run_implicit(raytune=False):
         meta_model.reset_parameters()
 
         # Initialise the inner-level optimizer
-        optimizer_inner = utils.create_optimizer(
-            optimizer_inner, model.parameters(), {"lr": lr_inner}
-        )
+        optimizer_inner = utils.create_optimizer(optimizer_inner_type, model.parameters(), {"lr": lr_inner})
 
         # Inner-loop training
         train.train_augmented(
@@ -186,14 +185,14 @@ def run_implicit(raytune=False):
             results["valid_acc"][step_outer] = valid_acc
             results["valid_loss"][step_outer] = valid_loss
 
-            config.writer.add_scalars('accuracy', {'train': train_acc, 'valid': valid_acc}, step_outer)
-            config.writer.add_scalars('loss', {'train': train_loss, 'valid': valid_loss}, step_outer)
+            # config.writer.add_scalars('accuracy', {'train': train_acc, 'valid': valid_acc}, step_outer)
+            # config.writer.add_scalars('loss', {'train': train_loss, 'valid': valid_loss}, step_outer)
 
-            for name, p in model.named_parameters():
-                config.writer.add_histogram('parameter/{}'.format(name), p.view(-1), step_outer)
+            # for name, p in model.named_parameters():
+            #     config.writer.add_histogram('parameter/{}'.format(name), p.view(-1), step_outer)
 
-            for name, p in hyperparams.named_parameters():
-                config.writer.add_histogram('hyperparameter/{}'.format(name), p.view(-1), step_outer)
+            # for name, p in hyperparams.named_parameters():
+            #     config.writer.add_histogram('hyperparameter/{}'.format(name), p.view(-1), step_outer)
 
     # Final Testing
     logging.info("Final training on full dataset (train + valid)")
