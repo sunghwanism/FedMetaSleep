@@ -36,13 +36,15 @@ class applewatch:
                 stage = temp["psg_status"].to_numpy()[0].astype(int)
                 # if stage == 5:
                 #     stage = 4
-                if stage in [1,2,3,4]:
+                if stage in [1,2,3,4,5]:
                     stage = 1
-                elif stage == 5:
-                    stage = 2
+                    
+                # elif stage == 5:
+                #     stage = 2
                 
                 self.x_data.append(np.stack([x_move, y_move, z_move, HR, activity], axis=1))
                 # self.x_data.append(np.stack([HR, activity], axis=1))
+                # self.x_data.append(HR)
                 self.y_data.append(stage)
         
         self.x_data = np.array(self.x_data)
