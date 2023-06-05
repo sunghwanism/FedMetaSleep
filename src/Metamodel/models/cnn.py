@@ -21,7 +21,7 @@ class LeNet(torch.nn.Module):
     """
     def __init__(self, output_dim):
         super().__init__()
-        self.input_dim = 2
+        self.input_dim = 1
         self.output_dim = output_dim
 
         self.features = torch.nn.Sequential(
@@ -39,7 +39,7 @@ class LeNet(torch.nn.Module):
             torch.nn.MaxPool1d(kernel_size=2)
         )
         self.classifier = torch.nn.Sequential(
-            torch.nn.Linear(768, 128),
+            torch.nn.Linear(768, 128), # length=30 768  // length=10 256
             torch.nn.BatchNorm1d(128),
             torch.nn.ReLU(),
             torch.nn.Linear(128, 64),
