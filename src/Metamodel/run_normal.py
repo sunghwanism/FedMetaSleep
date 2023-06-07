@@ -39,7 +39,7 @@ def run_model():
     # Initialise the model
     # NOTE: Hard-coded output_dim as all datasets considered so far have 10 outputs
     # model = models.LeNet(output_dim=5).to(device)
-    model = DepthNet(lengths=30, patch_size=1, in_chans=5, embed_dim=256, norm_layer=None).to(device)
+    model = DepthNet(lengths=30, patch_size=1, in_chans=5, embed_dim=128, norm_layer=None).to(device)
     
     
     # Initialise the implicit gradient approximation method
@@ -47,7 +47,7 @@ def run_model():
     
     lr = 0.0001
     # optimizer_outer = utils.create_optimizer(optimizer_outer, model.parameters(), {"lr": lr})
-    optimizer_outer = torch.optim.Adam(model.parameters(), lr=lr, weight_decay=0.001)
+    optimizer_outer = torch.optim.Adam(model.parameters(), lr=lr, weight_decay=0.1)
     criterion = nn.CrossEntropyLoss().to(device)
     
     best_acc = 0

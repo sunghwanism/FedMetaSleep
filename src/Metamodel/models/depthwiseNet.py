@@ -25,6 +25,7 @@ class MyModule2(nn.Module):
     
 class DepthNet(nn.Module):
     def __init__(self, lengths=30, patch_size=1, in_chans=5, embed_dim=256, norm_layer=None, output_dim=3):
+        print("DepthNet is used...")
         super().__init__()
         #num_patches = num_voxels // patch_size
         #self.patch_shape = patch_size
@@ -80,8 +81,6 @@ class DepthNet(nn.Module):
                     pass
                 
                 
-    
-    
         # def forward(self, x,):
     #     B, C, L = x.shape # batch, channel, lengths
     #     x = F.relu(self.temporal_embed_1(x))

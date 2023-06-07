@@ -13,7 +13,7 @@ THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR I
 import torch
 
 from utils import config
-
+from sklearn.metrics import confusion_matrix, auc, roc_curve, roc_auc_score, f1_score
 
 @torch.no_grad()
 def accuracy(model, dataloader):
@@ -25,16 +25,27 @@ def accuracy(model, dataloader):
     tot_correct, tot_samples = 0.0, 0.0
 
     # Count correct predictions for all data points in test set
+    val_pred = []
+    val_real = []
+    
     for x_batch, y_batch in dataloader:
         x_batch, y_batch = x_batch.to(config.device), y_batch.to(config.device)
         output, _ = model(x_batch)
 
         pred = torch.argmax(output, dim=1)
         correct = torch.sum(pred == y_batch)
-
+        
+        val_pred.extend(pred.detach().cpu().numpy())
+        val_real.extend(y_batch.detach().cpu().numpy())
+        
         tot_correct += correct
         tot_samples += x_batch.size(0)
-
+        
+    f1 = f1_score(val_pred, val_real, average="macro")
+    fpr, tpr, thresholds = roc_curve(val_pred, val_real, pos_label=2)
+    print("F1:", f1, "AUC:", auc(fpr, tpr))
+    print(confusion_matrix(val_pred, val_real,))
+    
     return tot_correct / tot_samples
 
 

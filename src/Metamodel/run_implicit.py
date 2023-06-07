@@ -41,6 +41,7 @@ def run_implicit(raytune=False):
     seed = 1000
     torch.manual_seed(seed)
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    print("Using device:", device)
     
     batch_size = 512
     database = "../../data/padding"
@@ -51,13 +52,13 @@ def run_implicit(raytune=False):
     # Initialise the model
     # NOTE: Hard-coded output_dim as all datasets considered so far have 10 outputs
     # model = models.LeNet(output_dim=10).to(device)
-    model = DepthNet(lengths=30, patch_size=1, in_chans=5, embed_dim=256, norm_layer=None).to(device)
+    model = DepthNet(lengths=30, patch_size=1, in_chans=5, embed_dim=256, norm_layer=None, output_dim=3).to(device)
     
     
     # Initialise the implicit gradient approximation method
     ############################################################
     # Configure
-    meta_method = "cg"
+    meta_method = "t1t2"
     cg_steps = 100
     
     nsa_steps = 500
@@ -65,7 +66,7 @@ def run_implicit(raytune=False):
     
     init_l2 = 1e-05
     inner_init = "fixed_seed"
-    optimizer_outer = "sgd"
+    optimizer_outer_type = "sgd"
     lr_outer = 0.001
     lr_inner = 0.001
     
@@ -96,7 +97,7 @@ def run_implicit(raytune=False):
     outer_loss_function = energy.CrossEntropy()
 
     # Initialise the outer-level optimizer
-    optimizer_outer = utils.create_optimizer(optimizer_outer, hyperparams.parameters(), {"lr": lr_outer})
+    optimizer_outer = utils.create_optimizer(optimizer_outer_type, hyperparams.parameters(), {"lr": lr_outer})
 
     results = {
         "test_acc": torch.zeros(steps_outer + 1),
@@ -118,10 +119,12 @@ def run_implicit(raytune=False):
 
         # Inner-loop training
         train.train_augmented(
-            meta_model, steps_inner, optimizer_inner, train_loader, inner_loss_function, verbose=not raytune
+            meta_model, steps_inner, optimizer_inner, train_loader, inner_loss_function, verbose=not raytune,
         )
 
         if step_outer < steps_inner:
+            print(step_outer)
+
 
             # HACK: Put all data in a single batch to save memory when backpropagating through the loss
             def dataloader_to_tensor(dataloader):
@@ -152,10 +155,11 @@ def run_implicit(raytune=False):
 
         # Testing
         with torch.no_grad():
-
+            print("<< Train Set >>")
             train_acc = train.accuracy(model, train_loader)
             train_loss = train.loss(model, train_loader, outer_loss_function)
-
+            
+            print("<< Validation Set >>")
             valid_acc = train.accuracy(model, valid_loader)
             valid_loss = train.loss(model, valid_loader, outer_loss_function)
 
@@ -168,6 +172,16 @@ def run_implicit(raytune=False):
                 "valid_loss": valid_loss.item(),
             })
         else:
+            print((
+                "step_outer: {}/{}\t train_acc: {:4f} \t valid_acc: {:4f}".format(
+                    step_outer, steps_outer, train_acc, valid_acc, 
+                )
+            ))
+            print((
+                "step_outer: {}/{}\t train_loss: {:4f} \t valid_loss: {:4f}".format(
+                    step_outer, steps_outer, train_loss, valid_loss, 
+                )
+            ))
             logging.info(
                 "step_outer: {}/{}\t train_acc: {:4f} \t valid_acc: {:4f}".format(
                     step_outer, steps_outer, train_acc, valid_acc, 
@@ -252,7 +266,7 @@ if __name__ == '__main__':
     # Store results, configuration and model state as pickle
     # results['cfg'], results['model'], results['hyperparameter'] = cfg, model.state_dict(), hyperparams.state_dict()
     results['model'], results['hyperparameter'] = model.state_dict(), hyperparams.state_dict()
-    torch.save(results, os.path.join(LOG_DIR, "results.pt"))
+    torch.save(results, os.path.join(LOG_DIR, "results_2.pt"))
 
     # Zip the tensorboard logging results and remove the folder to save space
     # config.writer.close()
