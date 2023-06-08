@@ -22,21 +22,24 @@ from .constants import (
 )
 from .core.common.ml_engine_backend import MLEngineBackend
 
-_global_training_type = None
-_global_comm_backend = None
+# _global_training_type = None
+# _global_comm_backend = None
 
 __version__ = "0.8.4a32"
 
 
 def init(args=None):
+    
     if args is None:
+        print('args is None')
         args = load_arguments(fedml._global_training_type, fedml._global_comm_backend)
 
     """Initialize FedML Engine."""
     collect_env(args)
-
+    
     fedml._global_training_type = args.training_type
     fedml._global_comm_backend = args.backend
+    
 
     """
     # Windows/Linux/MacOS compatability issues on multi-processing
@@ -65,6 +68,7 @@ def init(args=None):
 
     elif args.training_type == FEDML_TRAINING_PLATFORM_SIMULATION and hasattr(args, "backend") and args.backend == "sp":
         args = init_simulation_sp(args)
+        
     elif (
         args.training_type == FEDML_TRAINING_PLATFORM_SIMULATION
         and hasattr(args, "backend")
