@@ -1,7 +1,6 @@
 import sys
 sys.path.append("./")
 
-
 from fedml import fedml
 from data.data_loader import load_data
 from fedml import FedMLRunner
@@ -9,9 +8,27 @@ from model.depthwiseNet import DepthNet
 from trainer.fedmeta_aggregator import FedMeta_aggregator
 from trainer.fed_sleep_trainer import FedMetaTrainer
 
+from fedml.arguments import Arguments, add_args
+from fedml.constants import FEDML_TRAINING_PLATFORM_CROSS_SILO
+
+_global_training_type = FEDML_TRAINING_PLATFORM_CROSS_SILO
+
+def get_args():
+
+    fedml._global_training_type = FEDML_TRAINING_PLATFORM_CROSS_SILO
+
+    cmd_args = add_args()
+    args = Arguments(cmd_args, training_type=_global_training_type,)
+    # args.get_default_yaml_config(cmd_args, training_type=_global_training_type)
+    args.load_yaml_config("./config/fedml_config.yaml")
+    
+    return args
+
+
 if __name__ == "__main__":
     # init FedML framework
-    args = fedml.init()
+    args = get_args()
+    args = fedml.init(args=args)
 
     # init device
     device = fedml.device.get_device(args)
