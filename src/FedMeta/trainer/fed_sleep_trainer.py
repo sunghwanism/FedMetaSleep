@@ -26,7 +26,7 @@ class FedMetaTrainer(ClientTrainer):
 
         # train and update
         criterion = nn.CrossEntropyLoss().to(device)
-        optimizer = torch.optim.Adam(model.parameters(), lr=args.learning_rate)
+        optimizer = torch.optim.Adam(model.parameters(), lr=args.learning_rate, weight_decay=args.weight_decay)
 
         epoch_loss = []
         
