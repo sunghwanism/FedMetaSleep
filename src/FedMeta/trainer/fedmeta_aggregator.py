@@ -6,6 +6,8 @@ import pandas as pd
 import torch
 from torch import nn
 
+import time
+
 from fedml.core import ServerAggregator
 
 from sklearn.metrics import confusion_matrix, auc, roc_curve, roc_auc_score, f1_score, classification_report
@@ -100,17 +102,17 @@ class FedMeta_aggregator(ServerAggregator):
             print("----------------------------------------------")
 
             
-        time = time.strftime("%y%m%d_%H%M")
+        str_time = time.strftime("%y%m%d_%H%M")
         
         client_train_acc = np.array(client_train_acc)
         client_test_acc = np.array(client_test_acc)
         client_train_loss = np.array(client_train_loss)
         client_test_loss = np.array(client_test_loss)
                 
-        np.save(os.path.join(args.model_file_cache_folder, f"Clients_trainLoss_{time}"), client_train_loss)
-        np.save(os.path.join(args.model_file_cache_folder, f"Clients_testLoss_{time}"), client_test_loss)
-        np.save(os.path.join(args.model_file_cache_folder, f"Clients_trainAcc_{time}"), client_train_acc)
-        np.save(os.path.join(args.model_file_cache_folder, f"Clients_testAcc_{time}"), client_test_acc)
+        np.save(os.path.join(args.model_file_cache_folder, f"Clients_trainLoss_{str_time}"), client_train_loss)
+        np.save(os.path.join(args.model_file_cache_folder, f"Clients_testLoss_{str_time}"), client_test_loss)
+        np.save(os.path.join(args.model_file_cache_folder, f"Clients_trainAcc_{str_time}"), client_train_acc)
+        np.save(os.path.join(args.model_file_cache_folder, f"Clients_testAcc_{str_time}"), client_test_acc)
         
         client_idx = 1
         
