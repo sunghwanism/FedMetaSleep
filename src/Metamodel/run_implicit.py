@@ -54,8 +54,7 @@ def run_implicit(raytune=False):
     # model = models.LeNet(output_dim=10).to(device)
     model = DepthNet(lengths=30, patch_size=30, in_chans=5, embed_dim=256, norm_layer=None, output_dim=3).to(device)
     
-    best_acc = 0
-    
+    best_f1 = 0
     
     # Initialise the implicit gradient approximation method
     ############################################################
@@ -66,13 +65,13 @@ def run_implicit(raytune=False):
     nsa_steps = 500
     nsa_alpha = 0.0003
     
-    init_l2 = 1e-05
+    init_l2 = 1e-02
     inner_init = "fixed_seed"
     optimizer_outer_type = "adam"
     lr_outer = 0.0001
-    lr_inner = 0.0001
+    lr_inner = 0.001
     
-    steps_inner = 2000
+    steps_inner = 3000
     steps_outer = 100
     
     optimizer_inner_type = "sgd_nesterov"
@@ -82,8 +81,10 @@ def run_implicit(raytune=False):
         
     elif meta_method == "nsa":
         implicit_gradient = meta.NeumannSeries(nsa_steps, nsa_alpha)
+        
     elif meta_method == "t1t2":
         implicit_gradient = meta.T1T2()
+        
     else:
         raise ValueError("Implicit gradient approximation method \"{}\" undefined".format(meta_method))
     
@@ -114,7 +115,7 @@ def run_implicit(raytune=False):
     # +1 to evaluate the validation accuracy after the last outer step
     for step_outer in range(steps_outer + 1):
         # Initialise the model parameters
-        meta_model.reset_parameters()
+        meta_model.reset_parameters()                       
 
         # Initialise the inner-level optimizer
         optimizer_inner = utils.create_optimizer(optimizer_inner_type, model.parameters(), {"lr": lr_inner})
@@ -126,7 +127,6 @@ def run_implicit(raytune=False):
 
         if step_outer < steps_inner:
             print(step_outer)
-
 
             # HACK: Put all data in a single batch to save memory when backpropagating through the loss
             def dataloader_to_tensor(dataloader):
@@ -158,15 +158,15 @@ def run_implicit(raytune=False):
         # Testing
         with torch.no_grad():
             print("<< Train Set >>")
-            train_acc = train.accuracy(model, train_loader, device)
+            train_acc, train_f1 = train.accuracy(model, train_loader, device)
             train_loss = train.loss(model, train_loader, outer_loss_function, device)
             
             print("<< Validation Set >>")
-            valid_acc = train.accuracy(model, valid_loader, device)
+            valid_acc, valid_f1 = train.accuracy(model, valid_loader, device)
             valid_loss = train.loss(model, valid_loader, outer_loss_function, device)
             
-            if best_acc < valid_acc:
-                best_acc = valid_acc
+            if best_f1 < valid_f1:
+                best_f1 = valid_f1
                 torch.save(model.state_dict(), os.path.join("log",f"best_model_{meta_method}.pt"))
 
         # Logging
@@ -216,6 +216,7 @@ def run_implicit(raytune=False):
 
     # Final Testing
     logging.info("Final training on full dataset (train + valid)")
+    print(f"Best f1score", best_f1)
     
     return results, model, hyperparams
 
@@ -272,7 +273,6 @@ if __name__ == '__main__':
     # Store results, configuration and model state as pickle
     # results['cfg'], results['model'], results['hyperparameter'] = cfg, model.state_dict(), hyperparams.state_dict()
     results['model'], results['hyperparameter'] = model.state_dict(), hyperparams.state_dict()
-    torch.save(results, os.path.join(LOG_DIR, "results_3.pt"))
 
     # Zip the tensorboard logging results and remove the folder to save space
     # config.writer.close()

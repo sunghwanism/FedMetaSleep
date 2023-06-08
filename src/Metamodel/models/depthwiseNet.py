@@ -50,7 +50,7 @@ class DepthNet(nn.Module):
             MyModule(self.C),
             nn.Conv1d(128, embed_dim, kernel_size=patch_size, stride=patch_size),
             MyModule2(),
-            nn.LayerNorm(embed_dim)
+            # nn.LayerNorm(embed_dim)
         )
         
         self.classifier = torch.nn.Sequential(

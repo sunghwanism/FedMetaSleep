@@ -31,7 +31,6 @@ def accuracy(model, dataloader, device):
     for x_batch, y_batch in dataloader:
         x_batch, y_batch = x_batch.to(device), y_batch.to(device)
         output, _ = model(x_batch)
-
         pred = torch.argmax(output, dim=1)
         correct = torch.sum(pred == y_batch)
         
@@ -40,15 +39,18 @@ def accuracy(model, dataloader, device):
         
         tot_correct += correct
         tot_samples += x_batch.size(0)
+    
+    f1score = f1_score(val_real, val_pred, average='macro')
         
-    fpr, tpr, thresholds = roc_curve(val_pred, val_real, pos_label=2)
+    # fpr, tpr, thresholds = roc_curve(val_pred, val_real, pos_label=2)
     print("---------------------------------------------------")
-    print("AUC:", round(auc(fpr, tpr), 3))
+    # print("AUC:", round(auc(fpr, tpr), 3))
+    print("F1 Score:", round(f1score, 3))
     print(confusion_matrix(val_real, val_pred))
     print(classification_report(val_real, val_pred))
     print("---------------------------------------------------")
     
-    return tot_correct / tot_samples
+    return tot_correct / tot_samples, f1score
 
 
 def loss(model, dataloader, loss_function, device):
