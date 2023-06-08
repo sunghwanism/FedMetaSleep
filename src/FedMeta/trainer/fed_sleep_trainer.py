@@ -110,6 +110,6 @@ class FedMetaTrainer(ClientTrainer):
         running_loss = np.array(running_loss)
         acc = np.array(acc)
         
-        time = time.strftime("%y%m%d_%H%M%S")
-        np.save(os.path.join(args.model_file_cache_folder, f"testLoss_{time}"), running_loss)
-        np.save(os.path.join(args.model_file_cache_folder, f"testAcc_{time}"), acc)
+        str_time = time.strftime("%y%m%d_%H%M%S")
+        np.save(os.path.join(args.model_file_cache_folder, f"testLoss_{str_time}"), running_loss)
+        np.save(os.path.join(args.model_file_cache_folder, f"testAcc_{str_time}"), acc)
