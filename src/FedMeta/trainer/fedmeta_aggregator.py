@@ -65,7 +65,7 @@ class FedMeta_aggregator(ServerAggregator):
                 
             acc = tot_correct / tot_samples
             
-            client_train_loss.append(sum(train_running_loss) / len(train_data))
+            client_train_loss.append(train_running_loss / len(train_data))
             client_train_acc.append(acc)
             
             print(confusion_matrix(stage, pred))
@@ -94,7 +94,7 @@ class FedMeta_aggregator(ServerAggregator):
             
             acc = tot_correct / tot_samples
             
-            client_test_loss.append(sum(test_running_loss) / len(test_data))
+            client_test_loss.append(test_running_loss / len(test_data))
             client_test_acc.append(acc)
             
             print(confusion_matrix(stage, pred))
