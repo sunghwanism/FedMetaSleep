@@ -36,7 +36,7 @@ from .constants import (
 def add_args():
     parser = argparse.ArgumentParser(description="FedML")
     parser.add_argument(
-        "--yaml_config_file",
+        # "--yaml_config_file",
         "--cf",
         help="yaml configuration file",
         type=str,
@@ -57,6 +57,8 @@ def add_args():
 
     # default arguments
     parser.add_argument("--role", type=str, default="client")
+    
+    parser.add_argument("--yaml_config_file", type=str, default="./config/fedml_config.yaml")
 
     args, unknown = parser.parse_known_args()
     return args
@@ -76,6 +78,7 @@ class Arguments:
             # reload cmd args again
             for arg_key, arg_val in cmd_args_dict.items():
                 setattr(self, arg_key, arg_val)
+                
     def load_yaml_config(self, yaml_path):
         with open(yaml_path, "r") as stream:
             try:
