@@ -69,6 +69,7 @@ class FedMLTrainer(object):
 
         self.trainer.on_before_local_training(self.train_local, self.device, self.args)
         self.trainer.train(self.train_local, self.device, self.args)
+        self.trainer.test(self.test_local, self.device, self.args)
         self.trainer.on_after_local_training(self.train_local, self.device, self.args)
 
         MLOpsProfilerEvent.log_to_wandb({"Train/Time": time.time() - tick, "round": round_idx})
