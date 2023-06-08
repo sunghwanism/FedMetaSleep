@@ -41,8 +41,8 @@ if __name__ == "__main__":
     # load model
     model = DepthNet(lengths=30, patch_size=30, in_chans=5, embed_dim=256, norm_layer=None, output_dim=args.class_num)
         
-    pre_trained = torch.load("../Metamodel/log/best_model_t1t2.pt", map_location=device)
-    model.load_state_dict(pre_trained)
+    # pre_trained = torch.load("../Metamodel/log/best_model_t1t2.pt", map_location=device)
+    # model.load_state_dict(pre_trained)
 
     # create trainer
     trainer = FedMetaTrainer(model, args)
