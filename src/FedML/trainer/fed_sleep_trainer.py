@@ -2,8 +2,11 @@ import logging
 
 import torch
 from torch import nn
+import numpy as np
 
 from fedml.core import ClientTrainer
+import os
+import time
 
 
 class FedDetectTrainer(ClientTrainer):
@@ -20,34 +23,32 @@ class FedDetectTrainer(ClientTrainer):
         model.train()
 
         # train and update
-        criterion = nn.MSELoss().to(device)
+        criterion = nn.CrossEntropyLoss().to(device)
         optimizer = torch.optim.Adam(model.parameters(), lr=args.learning_rate)
 
         epoch_loss = []
         for epoch in range(args.epochs):
             batch_loss = []
             for batch_idx, x in enumerate(train_data):
-                x = x.to(device).float()
+                x, stage = x[0].to(device), x[1].to(device)
+                
                 optimizer.zero_grad()
-                decode = model(x)
-                loss = criterion(decode, x)
+                pred_value, _ = model(x)
+                
+                loss = criterion(pred_value, stage)
                 loss.backward()
                 optimizer.step()
 
-                # logging.info(
-                #     "Update Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}".format(
-                #         epoch,
-                #         (batch_idx + 1) * args.batch_size,
-                #         len(train_data) * args.batch_size,
-                #         100.0 * (batch_idx + 1) / len(train_data),
-                #         loss.item(),
-                #     )
-                # )
                 batch_loss.append(loss.item())
+                
             epoch_loss.append(sum(batch_loss) / len(batch_loss))
+            
             logging.info(
                 "Client Index = {}\tEpoch: {}\tLoss: {:.6f}".format(self.id, epoch, sum(epoch_loss) / len(epoch_loss))
             )
-
+        time = time.strftime("%y%m%d_%H%M%S")
+        np.save(os.path.join(args.model_file_cache_folder, f"learningLoss_{time}"), epoch_loss)
+        
+        
     def test(self, test_data, device, args):
         pass
