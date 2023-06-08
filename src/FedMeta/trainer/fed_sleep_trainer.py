@@ -90,7 +90,7 @@ class FedMetaTrainer(ClientTrainer):
                 tot_loss += loss.item()
             
             running_loss = round(tot_loss / len(test_data), 3)
-            acc = round(tot_correct / tot_samples, 3)
+            acc = tot_correct / tot_samples
             
             try:
                 f1score = round(f1_score(val_real, val_pred, average='macro'), 3)
