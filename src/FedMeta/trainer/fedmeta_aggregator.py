@@ -45,7 +45,7 @@ class FedMeta_aggregator(ServerAggregator):
         for client_index in train_data_local_dict.keys():
             train_data = train_data_local_dict[client_index]
             
-            print("(Train) Client", client_idx)
+            print("(Train) Client", client_index)
             train_running_loss = 0
             
             for batch_idx, x in enumerate(train_data):
@@ -76,7 +76,7 @@ class FedMeta_aggregator(ServerAggregator):
             test_data = test_data_local_dict[client_index]
             
             test_running_loss = 0
-            print("(Test) Client", client_idx)
+            print("(Test) Client", client_index)
             
             for batch_idx, x in enumerate(test_data):
                 x, stage = x[0].to(device), x[1].to(device)
