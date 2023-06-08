@@ -28,7 +28,7 @@ train_args:
   client_num_per_round: 9
   comm_round: 5
   epochs: 5
-  batch_size: 32
+  batch_size: 8
   client_optimizer: adam
   learning_rate: 0.001
   weight_decay: 0.001
