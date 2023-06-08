@@ -52,8 +52,8 @@ class FedMetaTrainer(ClientTrainer):
             )
         epoch_loss = np.array(epoch_loss)
         
-        time = time.strftime("%y%m%d_%H%M%S")
-        np.save(os.path.join(args.model_file_cache_folder, f"trainLoss_{time}"), epoch_loss)
+        str_time = time.strftime("%y%m%d_%H%M%S")
+        np.save(os.path.join(args.model_file_cache_folder, f"trainLoss_{str_time}"), epoch_loss)
         
         
     def test(self, test_data, device, args):
