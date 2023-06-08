@@ -13,10 +13,10 @@ THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR I
 import torch
 
 from utils import config
-from sklearn.metrics import confusion_matrix, auc, roc_curve, roc_auc_score, f1_score
+from sklearn.metrics import confusion_matrix, auc, roc_curve, roc_auc_score, f1_score, classification_report
 
 @torch.no_grad()
-def accuracy(model, dataloader):
+def accuracy(model, dataloader, device):
     """
     Compute accuracy on a given dataloader.
     """
@@ -29,7 +29,7 @@ def accuracy(model, dataloader):
     val_real = []
     
     for x_batch, y_batch in dataloader:
-        x_batch, y_batch = x_batch.to(config.device), y_batch.to(config.device)
+        x_batch, y_batch = x_batch.to(device), y_batch.to(device)
         output, _ = model(x_batch)
 
         pred = torch.argmax(output, dim=1)
@@ -41,15 +41,17 @@ def accuracy(model, dataloader):
         tot_correct += correct
         tot_samples += x_batch.size(0)
         
-    f1 = f1_score(val_pred, val_real, average="macro")
     fpr, tpr, thresholds = roc_curve(val_pred, val_real, pos_label=2)
-    print("F1:", f1, "AUC:", auc(fpr, tpr))
-    print(confusion_matrix(val_pred, val_real,))
+    print("---------------------------------------------------")
+    print("AUC:", round(auc(fpr, tpr), 3))
+    print(confusion_matrix(val_real, val_pred))
+    print(classification_report(val_real, val_pred))
+    print("---------------------------------------------------")
     
     return tot_correct / tot_samples
 
 
-def loss(model, dataloader, loss_function):
+def loss(model, dataloader, loss_function, device):
     """
     Compute the loss on a given dataloader.
 
@@ -67,7 +69,7 @@ def loss(model, dataloader, loss_function):
     loss_value = 0.0
 
     for x_batch, y_batch in dataloader:
-        x_batch, y_batch = x_batch.to(config.device), y_batch.to(config.device)
+        x_batch, y_batch = x_batch.to(device), y_batch.to(device)
         output, state = model(x_batch)
         loss_value += loss_function(output, y_batch, model, state)
 

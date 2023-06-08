@@ -11,7 +11,7 @@ import pandas as pd
 
 class applewatch:
 
-    def __init__(self, database, length, meta_train_client_idx_lst=None,):
+    def __init__(self, database, length, meta_train_client_idx_lst):
         
         self.x_data = []
         self.y_data = []
@@ -36,11 +36,11 @@ class applewatch:
                 stage = temp["psg_status"].to_numpy()[0].astype(int)
                 # if stage == 5:
                 #     stage = 4
-                if stage in [1,2,3,4,5]:
+                if stage in [1,2,3,4]:
                     stage = 1
                     
-                # elif stage == 5:
-                #     stage = 2
+                elif stage == 5:
+                    stage = 2
                 
                 self.x_data.append(np.stack([x_move, y_move, z_move, HR, activity], axis=1))
                 # self.x_data.append(np.stack([HR, activity], axis=1))
@@ -66,11 +66,11 @@ class applewatch:
         return self.x_data[idx], self.y_data[idx]
 
 
-def create_train_val_loader(database, batch_size, length):
+def create_train_val_loader(database, batch_size, length, meta_train_client_idx_lst=None, FLtrain=False):
     
     print("#######################################")
     print("Train DataLoader")
-    train_dataset = applewatch(database=database, length=length)
+    train_dataset = applewatch(database=database, length=length, meta_train_client_idx_lst=meta_train_client_idx_lst)
     
     print("#######################################")
     
@@ -78,7 +78,11 @@ def create_train_val_loader(database, batch_size, length):
     valid_dataset = applewatch(database=database, length=length, meta_train_client_idx_lst=[30, 31])
     print("#######################################")
     
-    train_dataloader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
-    valid_dataloader = DataLoader(valid_dataset, batch_size=batch_size, shuffle=False)
+    if FLtrain:
+        return train_dataset, valid_dataset
+        
+    else:
+        train_dataloader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
+        valid_dataloader = DataLoader(valid_dataset, batch_size=batch_size, shuffle=False)
 
-    return train_dataloader, valid_dataloader
+        return train_dataloader, valid_dataloader
