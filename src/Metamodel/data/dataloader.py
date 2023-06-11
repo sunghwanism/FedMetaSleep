@@ -7,8 +7,6 @@ import numpy as np
 import pandas as pd
 
 
-
-
 class applewatch:
 
     def __init__(self, database, length, meta_train_client_idx_lst):
@@ -23,6 +21,10 @@ class applewatch:
             PATH = os.path.join(database, f"c{client}_data.csv")
             data = pd.read_csv(PATH)
             
+            # if client not in [30, 31]:
+            #     data = data.drop(data[data["psg_status"]==4].index, axis=0)
+                # data = data.drop(data[data["psg_status"]==2].index, axis=0)
+            
             for k in range(int(len(data)/length)):
                 front_idx = int(k*length)
                 post_idx = int((k+1)*length)
@@ -32,8 +34,10 @@ class applewatch:
                 y_move = temp["y_move"].to_numpy()
                 z_move = temp["z_move"].to_numpy()
                 HR = temp["heart_rate"].to_numpy()
-                activity = temp["step_count"].to_numpy()
+                
+                activity = temp["steps"].to_numpy()
                 stage = temp["psg_status"].to_numpy()[0].astype(int)
+                
                 # if stage in [4,5]:
                 #     stage = 4
                 if stage in [1,2,3,4]:
