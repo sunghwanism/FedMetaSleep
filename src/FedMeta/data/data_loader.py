@@ -30,7 +30,7 @@ class applewatch:
             y_move = temp["y_move"].to_numpy()
             z_move = temp["z_move"].to_numpy()
             HR = temp["heart_rate"].to_numpy()
-            activity = temp["step"].to_numpy()
+            activity = temp["steps"].to_numpy()
             stage = temp["psg_status"].to_numpy()[0].astype(int)
             
             if stage in [1,2,3,4]:
