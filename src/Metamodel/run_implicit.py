@@ -44,7 +44,7 @@ def run_implicit(raytune=False):
     print("Using device:", device)
     
     batch_size = 512
-    database = "../../data/padding"
+    database = "../../data/new"
 
     # Create the training, validation and test dataloader
     train_loader, valid_loader = create_train_val_loader(database, batch_size, length=30)
@@ -52,7 +52,7 @@ def run_implicit(raytune=False):
     # Initialise the model
     # NOTE: Hard-coded output_dim as all datasets considered so far have 10 outputs
     # model = models.LeNet(output_dim=10).to(device)
-    model = DepthNet(lengths=30, patch_size=30, in_chans=5, embed_dim=256, norm_layer=None, output_dim=3).to(device)
+    model = DepthNet(lengths=30, patch_size=30, in_chans=2, embed_dim=256, norm_layer=None, output_dim=3).to(device)
     
     best_f1 = 0
     
@@ -68,10 +68,10 @@ def run_implicit(raytune=False):
     init_l2 = 1e-02
     inner_init = "fixed_seed"
     optimizer_outer_type = "adam"
-    lr_outer = 0.0001
-    lr_inner = 0.001
+    lr_outer = 0.00001
+    lr_inner = 0.00001
     
-    steps_inner = 3000
+    steps_inner = 2000
     steps_outer = 100
     
     optimizer_inner_type = "sgd_nesterov"

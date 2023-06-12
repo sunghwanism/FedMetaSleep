@@ -23,14 +23,15 @@ from sklearn.metrics import confusion_matrix, auc, roc_curve, roc_auc_score, f1_
 def run_model():
     
     # Initialize seed if specified (might slow down the model)
-    seed = 1
+    seed = 0
     torch.manual_seed(seed)
-    device = torch.device("cuda:1" if torch.cuda.is_available() else "cpu")
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     print("Device: ", device)
     
-    epochs = 500
+    epochs = 200
     batch_size = 512
-    database = "../../data/padding"
+    # database = "../../data/padding"
+    database = "../../data/new"
 
     # Create the training, validation and test dataloader
     train_loader, valid_loader = create_train_val_loader(database, batch_size, length=30)
@@ -39,15 +40,16 @@ def run_model():
     # Initialise the model
     # NOTE: Hard-coded output_dim as all datasets considered so far have 10 outputs
     # model = models.LeNet(output_dim=5).to(device)
-    model = DepthNet(lengths=30, patch_size=30, in_chans=5, embed_dim=256, norm_layer=None, output_dim=3).to(device)
+    model = DepthNet(lengths=30, patch_size=30, in_chans=2, embed_dim=256, norm_layer=None, output_dim=3).to(device)
     
     
     # Initialise the implicit gradient approximation method
     ############################################################
     
-    lr = 0.0001
+    lr = 0.00001
     # optimizer_outer = utils.create_optimizer(optimizer_outer, model.parameters(), {"lr": lr})
     optimizer_outer = torch.optim.Adam(model.parameters(), lr=lr, weight_decay=0.001)
+    scheduler = torch.optim.lr_scheduler.StepLR(optimizer=optimizer_outer, step_size=40, gamma=0.5, last_epoch=-1, verbose=False)
     criterion = nn.CrossEntropyLoss().to(device)
     
     best_acc = 0
@@ -71,8 +73,9 @@ def run_model():
             running_loss += loss.item()
             
         running_loss /= len(train_loader)
+        scheduler.step()
         
-        print(f"(Train) Epoch: {epoch}, Loss: {round(running_loss, 3)}")
+        # print(f"(Train) Epoch: {epoch}, Loss: {round(running_loss, 3)}")
         
         if epoch % 1 == 0:
             print("<< Validation >>")
@@ -107,7 +110,7 @@ def run_model():
                     
                 if best_f1 < f1:
                     best_f1 = f1
-                    torch.save(model.state_dict(), "./log/Base_3class.pth")
+                    # torch.save(model.state_dict(), "./log/Base_3class.pth")
                 
                 # roc_score = roc_auc_score(val_real, val_pred, multi_class="ovr", average="macro")
                 print(f"(Valid) Epoch: {epoch}, Loss: {round(valid_loss, 3)}, Acc: {round(acc, 3)}, F1: {round(f1, 3)}")

@@ -43,23 +43,29 @@ class DepthNet(nn.Module):
         self.C = in_chans
             
         self.features = torch.nn.Sequential(
-            nn.Conv1d(in_chans, 16*in_chans, kernel_size=7, stride=1, groups=in_chans,),
-            nn.ReLU(),
-            nn.Conv1d(16*in_chans, 128*in_chans, kernel_size=7, stride=1, groups=in_chans,),
-            nn.ReLU(),
+            nn.Conv1d(in_chans, 64*in_chans, kernel_size=3, stride=1, groups=in_chans,),
+            nn.ELU(),
+            torch.nn.Dropout(0.5),
+            nn.Conv1d(64*in_chans, 256*in_chans, kernel_size=3, stride=1, groups=in_chans,),
+            nn.ELU(),
+            torch.nn.Dropout(0.5),
+            nn.Conv1d(256*in_chans, 512*in_chans, kernel_size=3, stride=1, groups=in_chans,),
+            nn.ELU(),
             MyModule(self.C),
-            nn.Conv1d(128, embed_dim, kernel_size=patch_size, stride=patch_size),
+            nn.Conv1d(512, embed_dim, kernel_size=patch_size, stride=patch_size),
             MyModule2(),
             # nn.LayerNorm(embed_dim)
         )
         
         self.classifier = torch.nn.Sequential(
-            torch.nn.Linear(768, 128), # length=30 768  // length=10 256
+            torch.nn.Linear(256, 128), # patch_size=10 (2304), patch_size=15 (1536), patch_size=30 (768)
             torch.nn.BatchNorm1d(128),
-            torch.nn.ReLU(),
+            torch.nn.ELU(),
+            torch.nn.Dropout(0.5),
             torch.nn.Linear(128, 64),
             torch.nn.BatchNorm1d(64),
-            torch.nn.ReLU(),
+            torch.nn.ELU(),
+            torch.nn.Dropout(0.5),
             torch.nn.Linear(64, output_dim)
         )
     

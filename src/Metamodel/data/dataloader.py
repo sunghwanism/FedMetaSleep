@@ -35,6 +35,7 @@ class applewatch:
                 z_move = temp["z_move"].to_numpy()
                 HR = temp["heart_rate"].to_numpy()
                 
+                # activity = temp["step_count"].to_numpy()
                 activity = temp["steps"].to_numpy()
                 stage = temp["psg_status"].to_numpy()[0].astype(int)
                 
@@ -46,8 +47,8 @@ class applewatch:
                 elif stage == 5:
                     stage = 2
                 
-                self.x_data.append(np.stack([x_move, y_move, z_move, HR, activity], axis=1))
-                # self.x_data.append(np.stack([HR, activity], axis=1))
+                # self.x_data.append(np.stack([x_move, y_move, z_move, HR, activity], axis=1))
+                self.x_data.append(np.stack([HR, activity], axis=1))
                 # self.x_data.append(HR)
                 self.y_data.append(stage)
         
