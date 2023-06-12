@@ -20,8 +20,8 @@ class FedMeta_aggregator(ServerAggregator):
 
     def set_model_params(self, model_parameters):
         self.model.load_state_dict(model_parameters)
-        str_time = time.strftime("%y%m%d_%H%M%S")
-        torch.save(self.model.cpu().state_dict(), os.path.join(self.args.model_file_cache_folder, f"model_{str_time}.pt"))
+        # str_time = time.strftime("%y%m%d_%H%M%S")
+        # torch.save(self.model.cpu().state_dict(), os.path.join(self.args.model_file_cache_folder, f"model_{str_time}.pt"))
 
     def test(self, test_data, device, args):
         pass
