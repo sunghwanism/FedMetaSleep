@@ -24,22 +24,12 @@ class MyModule2(nn.Module):
     
     
 class DepthNet(nn.Module):
-    def __init__(self, lengths=30, patch_size=1, in_chans=3, embed_dim=256, norm_layer=None, output_dim=3):
-        print("DepthNet is used...")
+    def __init__(self, lengths=30, patch_size=30, in_chans=2, embed_dim=256, norm_layer=None, output_dim=3):
+        print("DepthNet is used... (FL)")
         super().__init__()
-        #num_patches = num_voxels // patch_size
-        #self.patch_shape = patch_size
-        #self.num_voxels = num_voxels
-        #self.patch_size = patch_size
-        #self.num_patches = num_patches
         self.lengths = lengths
         self.in_chans = in_chans
         self.embed_dim = embed_dim
-        # self.temporal_embed_1 = nn.Conv1d(in_chans, 8*in_chans, kernel_size=9, stride=2, groups=in_chans, )
-        # self.temporal_embed_2 = nn.Conv1d(8*in_chans, 64*in_chans, kernel_size=9, stride=2, groups=in_chans,)
-        # self.temporal_embed_3 = nn.Conv1d(64*in_chans, 128*in_chans, kernel_size=9, stride=2, groups=in_chans)
-        # self.proj = nn.Conv1d(64, embed_dim, kernel_size=patch_size, stride=patch_size)
-        # self.relu = torch.nn.ReLU()
         self.C = in_chans
             
         self.features = torch.nn.Sequential(
