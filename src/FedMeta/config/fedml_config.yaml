@@ -24,20 +24,20 @@ model_args:
 train_args:
   federated_optimizer: "FedAvg"
   client_id_list:
-  client_num_in_total: 9
-  client_num_per_round: 9
+  client_num_in_total: 10
+  client_num_per_round: 10
   comm_round: 5
   epochs: 20
   batch_size: 128
   client_optimizer: adam
-  learning_rate: 0.0001
+  learning_rate: 0.00001
   weight_decay: 0.01
 
 validation_args:
   frequency_of_the_test: 1
 
 device_args:
-  worker_num: 9
+  worker_num: 10
   using_gpu: false
   gpu_mapping_file: config/gpu_mapping.yaml
   gpu_mapping_key: mapping_default
