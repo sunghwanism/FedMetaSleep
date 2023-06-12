@@ -7,7 +7,7 @@ import numpy as np
 from fedml.core import ClientTrainer
 import os
 import time
-from sklearn.metrics import confusion_matrix, auc, roc_curve, roc_auc_score, f1_score, classification_report
+from sklearn.metrics import confusion_matrix, f1_score, classification_report
 
 
 class FedMetaTrainer(ClientTrainer):
@@ -26,7 +26,7 @@ class FedMetaTrainer(ClientTrainer):
 
         # train and update
         criterion = nn.CrossEntropyLoss().to(device)
-        optimizer = torch.optim.Adam(model.parameters(), lr=args.learning_rate, weight_decay=args.weight_decay)
+        optimizer = torch.optim.SGD(model.parameters(), lr=args.learning_rate, weight_decay=args.weight_decay)
 
         epoch_loss = []
         
@@ -52,8 +52,8 @@ class FedMetaTrainer(ClientTrainer):
             )
         epoch_loss = np.array(epoch_loss)
         
-        str_time = time.strftime("%y%m%d_%H%M%S")
-        np.save(os.path.join(args.model_file_cache_folder, f"trainLoss_{str_time}"), epoch_loss)
+        # str_time = time.strftime("%y%m%d_%H%M%S")
+        # np.save(os.path.join(args.model_file_cache_folder, f"trainLoss_{str_time}"), epoch_loss)
         
         
     def test(self, test_data, device, args):
@@ -92,16 +92,15 @@ class FedMetaTrainer(ClientTrainer):
             running_loss = round(tot_loss / len(test_data), 3)
             acc = tot_correct / tot_samples
             
-            try:
-                f1score = round(f1_score(val_real, val_pred, average='macro'), 3)
-                
-            except:
-                f1score = -1.0
+            f1score = round(f1_score(val_real, val_pred, average='weighted', zero_division=0), 3)
+
             
             print("---------------------------------------------------")
             # print("AUC:", round(auc(fpr, tpr), 3))
-            print("F1 Score:", round(f1score, 3))
+            print(f"F1 Score: {round(f1score, 3)}")
+            print()
             print(confusion_matrix(val_real, val_pred))
+            print()
             print(classification_report(val_real, val_pred))
             print("---------------------------------------------------")
             
@@ -111,5 +110,5 @@ class FedMetaTrainer(ClientTrainer):
         acc = np.array(acc)
         
         str_time = time.strftime("%y%m%d_%H%M%S")
-        np.save(os.path.join(args.model_file_cache_folder, f"testLoss_{str_time}"), running_loss)
-        np.save(os.path.join(args.model_file_cache_folder, f"testAcc_{str_time}"), acc)
+        # np.save(os.path.join(args.model_file_cache_folder, f"testLoss_{str_time}"), running_loss)
+        # np.save(os.path.join(args.model_file_cache_folder, f"testAcc_{str_time}"), acc)

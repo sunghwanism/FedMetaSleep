@@ -20,8 +20,8 @@ class FedMeta_aggregator(ServerAggregator):
 
     def set_model_params(self, model_parameters):
         self.model.load_state_dict(model_parameters)
-        # str_time = time.strftime("%y%m%d_%H%M%S")
-        # torch.save(self.model.cpu().state_dict(), os.path.join(self.args.model_file_cache_folder, f"model_{str_time}.pt"))
+        str_time = time.strftime("%y%m%d_%H%M%S")
+        torch.save(self.model.cpu().state_dict(), os.path.join(self.args.model_file_cache_folder, f"FLmodel_{str_time}.pt"))
 
     def test(self, test_data, device, args):
         pass
@@ -47,7 +47,7 @@ class FedMeta_aggregator(ServerAggregator):
         for client_index in train_data_local_dict.keys():
             train_data = train_data_local_dict[client_index]
             
-            print("(Train) Client", client_index)
+            #  print("(Train) Client", client_index)
             train_running_loss = 0
             
             for batch_idx, x in enumerate(train_data):
@@ -70,15 +70,17 @@ class FedMeta_aggregator(ServerAggregator):
             client_train_loss.append(train_running_loss / len(train_data))
             client_train_acc.append(acc)
             
-            print(confusion_matrix(stage, pred))
-            print(classification_report(stage, pred))
-            print("----------------------------------------------")
+            # print(confusion_matrix(stage, pred))
+            # print(classification_report(stage, pred))
+            # print("----------------------------------------------")
+        print()
         print("#################################################################")
         for client_index in test_data_local_dict.keys():
             test_data = test_data_local_dict[client_index]
             
             test_running_loss = 0
-            print("(Test) Client", client_index)
+            
+            print("(Test) Client",client_index)
             
             for batch_idx, x in enumerate(test_data):
                 x, stage = x[0].to(device), x[1].to(device)
@@ -98,23 +100,28 @@ class FedMeta_aggregator(ServerAggregator):
             
             client_test_loss.append(test_running_loss / len(test_data))
             client_test_acc.append(acc)
+            print()
+            print(f"(weighted) F1 score, {round(f1_score(stage, pred_value, average='weighted', zero_division=0), 3)}")
             
+            print()
             print(confusion_matrix(stage, pred))
             print(classification_report(stage, pred))
             print("----------------------------------------------")
+        print()
+        print("#################################################################")
 
             
-        str_time = time.strftime("%y%m%d_%H%M")
+        # str_time = time.strftime("%y%m%d_%H%M")
         
         client_train_acc = np.array(client_train_acc)
         client_test_acc = np.array(client_test_acc)
         client_train_loss = np.array(client_train_loss)
         client_test_loss = np.array(client_test_loss)
                 
-        np.save(os.path.join(args.model_file_cache_folder, f"Clients_trainLoss_{str_time}"), client_train_loss)
-        np.save(os.path.join(args.model_file_cache_folder, f"Clients_testLoss_{str_time}"), client_test_loss)
-        np.save(os.path.join(args.model_file_cache_folder, f"Clients_trainAcc_{str_time}"), client_train_acc)
-        np.save(os.path.join(args.model_file_cache_folder, f"Clients_testAcc_{str_time}"), client_test_acc)
+        # np.save(os.path.join(args.model_file_cache_folder, f"Clients_trainLoss_{str_time}"), client_train_loss)
+        # np.save(os.path.join(args.model_file_cache_folder, f"Clients_testLoss_{str_time}"), client_test_loss)
+        # np.save(os.path.join(args.model_file_cache_folder, f"Clients_trainAcc_{str_time}"), client_train_acc)
+        # np.save(os.path.join(args.model_file_cache_folder, f"Clients_testAcc_{str_time}"), client_test_acc)
         
         client_idx = 1
         

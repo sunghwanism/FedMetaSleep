@@ -26,9 +26,9 @@ class applewatch:
             post_idx = int((k+1)*length)
             
             temp = data[front_idx:post_idx]                
-            x_move = temp["x_move"].to_numpy()
-            y_move = temp["y_move"].to_numpy()
-            z_move = temp["z_move"].to_numpy()
+            # x_move = temp["x_move"].to_numpy()
+            # y_move = temp["y_move"].to_numpy()
+            # z_move = temp["z_move"].to_numpy()
             HR = temp["heart_rate"].to_numpy()
             activity = temp["steps"].to_numpy()
             stage = temp["psg_status"].to_numpy()[0].astype(int)
