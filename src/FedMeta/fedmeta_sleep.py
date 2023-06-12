@@ -39,7 +39,7 @@ if __name__ == "__main__":
     dataset, output_dim = load_data(args, length=30)
 
     # load model
-    model = DepthNet(lengths=30, patch_size=30, in_chans=5, embed_dim=256, norm_layer=None, output_dim=args.class_num)
+    model = DepthNet(lengths=30, patch_size=30, in_chans=2, embed_dim=256, norm_layer=None, output_dim=args.class_num)
         
     # pre_trained = torch.load("../Metamodel/log/best_model_t1t2.pt", map_location=device)
     # model.load_state_dict(pre_trained)
