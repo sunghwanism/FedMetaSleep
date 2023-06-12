@@ -84,11 +84,11 @@ def load_data(args, length=30):
                                                                   generator=generator)                        
             
             train_data_local_dict[i] = torch.utils.data.DataLoader(
-                train_data, batch_size=args.batch_size, shuffle=True, num_workers=2
+                train_data, batch_size=args.batch_size, shuffle=True, drop_last=True
             )
             
             test_data_local_dict[i] = torch.utils.data.DataLoader(
-                test_data, batch_size=args.batch_size, shuffle=False, num_workers=2
+                test_data, batch_size=args.batch_size, shuffle=False, drop_last=True
             )
             
             train_data_local_num_dict[i] = len(train_data_local_dict[i])
@@ -103,11 +103,11 @@ def load_data(args, length=30):
                                                                 generator=generator)           
 
         train_data_local_dict[args.rank - 1] = torch.utils.data.DataLoader(
-            train_data, batch_size=args.batch_size, shuffle=True, num_workers=2
+            train_data, batch_size=args.batch_size, shuffle=True, drop_last=True
         )
         
         test_data_local_dict[args.rank - 1] = torch.utils.data.DataLoader(
-            test_data, batch_size=args.batch_size, shuffle=False, num_workers=2
+            test_data, batch_size=args.batch_size, shuffle=False, drop_last=True
         )
         
         train_data_local_num_dict[args.rank - 1] = len(train_data_local_dict[args.rank - 1])
