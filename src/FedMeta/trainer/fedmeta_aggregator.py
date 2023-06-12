@@ -79,6 +79,8 @@ class FedMeta_aggregator(ServerAggregator):
             test_data = test_data_local_dict[client_index]
             
             test_running_loss = 0
+            val_pred = []
+            val_real = []
             
             print("(Test) Client",client_index)
             
@@ -95,13 +97,15 @@ class FedMeta_aggregator(ServerAggregator):
                 
                 tot_correct += correct
                 tot_samples += x.size(0)
+                val_pred.extend(pred.detach().cpu().numpy())
+                val_real.extend(stage.detach().cpu().numpy())
             
             acc = tot_correct / tot_samples
             
             client_test_loss.append(test_running_loss / len(test_data))
             client_test_acc.append(acc)
             print()
-            print(f"(weighted) F1 score, {round(f1_score(stage, pred_value, average='weighted', zero_division=0), 3)}")
+            print(f"(weighted) F1 score, {round(f1_score(val_real, val_pred, average='weighted', zero_division=0), 3)}")
             
             print()
             print(confusion_matrix(stage, pred))
