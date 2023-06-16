@@ -2,9 +2,9 @@ import os
 import torch
 from torch.utils.data import DataLoader, TensorDataset
 
-
 import numpy as np
 import pandas as pd
+import random
 
 
 class applewatch:
@@ -29,7 +29,7 @@ class applewatch:
                 front_idx = int(k*length)
                 post_idx = int((k+1)*length)
                 
-                temp = data[front_idx:post_idx]                
+                temp = data[front_idx:post_idx] 
                 x_move = temp["x_move"].to_numpy()
                 y_move = temp["y_move"].to_numpy()
                 z_move = temp["z_move"].to_numpy()
@@ -60,8 +60,8 @@ class applewatch:
         
         self.x_data = self.x_data.permute(0, 2, 1)
         
-        print("x_data shape: ", self.x_data.shape)
-        print("y_data shape: ", self.y_data.shape, "class_num", self.y_data.unique().shape[0])
+        # print("x_data shape: ", self.x_data.shape)
+        # print("y_data shape: ", self.y_data.shape, "class_num", self.y_data.unique().shape[0])
         
     def __len__(self):
         return len(self.x_data)
@@ -73,21 +73,21 @@ class applewatch:
 
 def create_train_val_loader(database, batch_size, length, meta_train_client_idx_lst=None, FLtrain=False):
     
-    print("#######################################")
-    print("Train DataLoader")
+    # print("#######################################")
+    # print("Train DataLoader")
     train_dataset = applewatch(database=database, length=length, meta_train_client_idx_lst=meta_train_client_idx_lst)
     
-    print("#######################################")
+    # print("#######################################")
     
-    print("Validation DataLoader")
+    # print("Validation DataLoader")
     valid_dataset = applewatch(database=database, length=length, meta_train_client_idx_lst=[30, 31])
-    print("#######################################")
+    # print("#######################################")
     
     if FLtrain:
         return train_dataset, valid_dataset
         
     else:
         train_dataloader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
-        valid_dataloader = DataLoader(valid_dataset, batch_size=batch_size, shuffle=False)
+        valid_dataloader = DataLoader(valid_dataset, batch_size=batch_size, shuffle=True)
 
         return train_dataloader, valid_dataloader
