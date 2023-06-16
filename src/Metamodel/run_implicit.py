@@ -40,14 +40,14 @@ def run_implicit(raytune=False):
     # Initialize seed if specified (might slow down the model)
     seed = 1000
     torch.manual_seed(seed)
-    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print("Using device:", device)
     
-    batch_size = 512
+    batch_size = 1024
     database = "../../data/new"
 
     # Create the training, validation and test dataloader
-    train_loader, valid_loader = create_train_val_loader(database, batch_size, length=30)
+    train_loader, valid_loader = create_train_val_loader(database, batch_size, length=30, meta_train_client_idx_lst=[12,14,16,18,20])
 
     # Initialise the model
     # NOTE: Hard-coded output_dim as all datasets considered so far have 10 outputs
@@ -68,10 +68,10 @@ def run_implicit(raytune=False):
     init_l2 = 1e-02
     inner_init = "fixed_seed"
     optimizer_outer_type = "adam"
-    lr_outer = 0.00001
-    lr_inner = 0.00001
+    lr_outer = 0.0001
+    lr_inner = 0.001
     
-    steps_inner = 2000
+    steps_inner = 3000
     steps_outer = 100
     
     optimizer_inner_type = "sgd_nesterov"

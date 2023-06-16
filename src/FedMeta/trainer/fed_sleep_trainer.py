@@ -10,6 +10,20 @@ import time
 from sklearn.metrics import confusion_matrix, f1_score, classification_report
 
 
+import torch.backends.cudnn as cudnn
+import random
+
+torch.manual_seed(0)
+torch.cuda.manual_seed(0)
+torch.cuda.manual_seed_all(0)
+np.random.seed(0)
+cudnn.benchmark = False
+cudnn.deterministic = True
+random.seed(0)
+generator = torch.Generator()
+generator.manual_seed(0)
+
+
 class FedMetaTrainer(ClientTrainer):
     
     def get_model_params(self):

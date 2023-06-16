@@ -106,7 +106,7 @@ def run_model():
                 
                 if best_acc < acc:
                     best_acc = acc
-                    # torch.save(model.state_dict(), "./model/depthwiseNet.pth")
+                    torch.save(model.state_dict(), "./log/Base_3class_normal.pt")
                     
                 if best_f1 < f1:
                     best_f1 = f1
