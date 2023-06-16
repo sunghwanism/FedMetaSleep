@@ -7,8 +7,11 @@ from fedml import FedMLRunner
 from model.depthwiseNet import DepthNet
 from trainer.fedmeta_aggregator import FedMeta_aggregator
 from trainer.fed_sleep_trainer import FedMetaTrainer
+import numpy as np
 
 import torch
+import random
+import torch.backends.cudnn as cudnn
 
 from fedml.arguments import Arguments, add_args
 from fedml.constants import FEDML_TRAINING_PLATFORM_CROSS_SILO
@@ -29,8 +32,17 @@ def get_args():
 
 if __name__ == "__main__":
     # init FedML framework
+        
     args = get_args()
     args = fedml.init(args=args)
+    
+    torch.manual_seed(args.random_seed)
+    torch.cuda.manual_seed(args.random_seed)
+    torch.cuda.manual_seed_all(args.random_seed)
+    np.random.seed(args.random_seed)
+    cudnn.benchmark = False
+    cudnn.deterministic = True
+    random.seed(args.random_seed)
 
     # init device
     device = fedml.device.get_device(args)

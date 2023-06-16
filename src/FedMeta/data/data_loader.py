@@ -11,6 +11,7 @@ from torch.utils.data import DataLoader, TensorDataset
 import torch.backends.cudnn as cudnn
 import random
 
+<<<<<<< HEAD
 torch.manual_seed(0)
 torch.cuda.manual_seed(0)
 torch.cuda.manual_seed_all(0)
@@ -20,6 +21,8 @@ cudnn.deterministic = True
 random.seed(0)
 generator = torch.Generator()
 generator.manual_seed(0)
+=======
+>>>>>>> 620ddfbfc626ac954827da576cd18e23d4379da8
 
 class applewatch:
 
@@ -86,6 +89,9 @@ def load_data(args, length=30):
         for i in range(args.client_num_in_total):
             PATH = os.path.join(args.database, f"c{i+1}_data.csv")
             
+            generator = torch.Generator()
+            generator.manual_seed(0)
+            
             train_dataset = applewatch(PATH=PATH, length=length)
             train_data, test_data = torch.utils.data.random_split(train_dataset,
                                                                   [int(len(train_dataset)*0.8),
@@ -104,6 +110,10 @@ def load_data(args, length=30):
             train_data_num += train_data_local_num_dict[i]
 
     else:
+        
+        generator = torch.Generator()
+        generator.manual_seed(0)
+        
         PATH = os.path.join(args.database, f"c{args.rank}_data.csv")
         train_dataset = applewatch(PATH=PATH, length=length)
         train_data, test_data = torch.utils.data.random_split(train_dataset,
