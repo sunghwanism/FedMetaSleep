@@ -23,14 +23,11 @@ from sklearn.preprocessing import LabelBinarizer
 from sklearn.metrics import confusion_matrix, auc, roc_auc_score, f1_score, classification_report
 from torchmetrics.classification import MulticlassAUROC
 
-generator = torch.Generator()
-generator.manual_seed(0)
-
 
 def get_round_loss_score(DATABASE, MODELBASE, basemodel, device, client, weightedType="macro", all_round=True):
     
-    # generator = torch.Generator()
-    # generator.manual_seed(0)
+    generator = torch.Generator()
+    generator.manual_seed(0)
     
     client = [client]
     train_set, validadtion_set = create_train_val_loader(DATABASE, batch_size=256, 
@@ -228,8 +225,8 @@ def train_one_epoch_output(DATABASE, MODELBASE, basemodel, device, client, round
     train_set, validadtion_set = create_train_val_loader(DATABASE, batch_size=256, 
                                                          length=30, meta_train_client_idx_lst=temp_client_lst, FLtrain=True)
     
-    # generator = torch.Generator()
-    # generator.manual_seed(0)
+    generator = torch.Generator()
+    generator.manual_seed(0)
     
     client_train_set, client_test_set = random_split(train_set,
                                                      [int(len(train_set) * 0.8), 
