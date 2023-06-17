@@ -258,3 +258,20 @@ def train_one_epoch_output(DATABASE, MODELBASE, basemodel, device, client, round
         
     
     return get_round_loss_score(DATABASE, MODELBASE, basemodel, device, client, weightedType=weightedType, all_round=False)
+
+
+class EarlyStopping:
+    def __init__(self, patience=5):
+        self.loss = np.inf
+        self.patience = 0
+        self.patience_limit = patience
+        
+    def step(self, loss):
+        if self.loss > loss:
+            self.loss = loss
+            self.patience = 0
+        else:
+            self.patience += 1
+    
+    def is_stop(self):
+        return self.patience >= self.patience_limit

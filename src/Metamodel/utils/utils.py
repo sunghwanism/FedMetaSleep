@@ -15,6 +15,7 @@ import os
 import shutil
 import torch
 import torchvision
+import numpy as np
 
 
 def first_elem(iterator):
@@ -99,3 +100,20 @@ def zip_and_remove(path):
     """
     shutil.make_archive(path, 'zip', path)
     shutil.rmtree(path)
+
+
+class EarlyStopping:
+    def __init__(self, patience=5):
+        self.loss = 0
+        self.patience = 0
+        self.patience_limit = patience
+        
+    def step(self, loss):
+        if self.loss > loss:
+            self.loss = loss
+            self.patience = 0
+        else:
+            self.patience += 1
+    
+    def is_stop(self):
+        return self.patience >= self.patience_limit
