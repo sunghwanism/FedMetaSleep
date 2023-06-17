@@ -11,7 +11,6 @@ from torch.utils.data import DataLoader, TensorDataset
 import torch.backends.cudnn as cudnn
 import random
 
-<<<<<<< HEAD
 torch.manual_seed(0)
 torch.cuda.manual_seed(0)
 torch.cuda.manual_seed_all(0)
@@ -19,10 +18,8 @@ np.random.seed(0)
 cudnn.benchmark = False
 cudnn.deterministic = True
 random.seed(0)
-generator = torch.Generator()
-generator.manual_seed(0)
-=======
->>>>>>> 620ddfbfc626ac954827da576cd18e23d4379da8
+np.random.seed(0)
+torch.cuda.manual_seed_all(0)
 
 class applewatch:
 
@@ -99,11 +96,11 @@ def load_data(args, length=30):
                                                                   generator=generator)                        
             
             train_data_local_dict[i] = torch.utils.data.DataLoader(
-                train_data, batch_size=args.batch_size, shuffle=True, drop_last=True
+                train_data, batch_size=args.batch_size, shuffle=True, drop_last=False
             )
             
             test_data_local_dict[i] = torch.utils.data.DataLoader(
-                test_data, batch_size=args.batch_size, shuffle=False, drop_last=True
+                test_data, batch_size=args.batch_size, shuffle=False, drop_last=False
             )
             
             train_data_local_num_dict[i] = len(train_data_local_dict[i])
@@ -122,11 +119,11 @@ def load_data(args, length=30):
                                                                 generator=generator)           
 
         train_data_local_dict[args.rank - 1] = torch.utils.data.DataLoader(
-            train_data, batch_size=args.batch_size, shuffle=True, drop_last=True
+            train_data, batch_size=args.batch_size, shuffle=True, drop_last=False
         )
         
         test_data_local_dict[args.rank - 1] = torch.utils.data.DataLoader(
-            test_data, batch_size=args.batch_size, shuffle=False, drop_last=True
+            test_data, batch_size=args.batch_size, shuffle=False, drop_last=False
         )
         
         train_data_local_num_dict[args.rank - 1] = len(train_data_local_dict[args.rank - 1])
