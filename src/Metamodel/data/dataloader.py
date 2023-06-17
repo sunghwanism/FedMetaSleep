@@ -21,18 +21,14 @@ class applewatch:
             PATH = os.path.join(database, f"c{client}_data.csv")
             data = pd.read_csv(PATH)
             
-            # if client not in [30, 31]:
-            #     data = data.drop(data[data["psg_status"]==4].index, axis=0)
-                # data = data.drop(data[data["psg_status"]==2].index, axis=0)
-            
             for k in range(int(len(data)/length)):
                 front_idx = int(k*length)
                 post_idx = int((k+1)*length)
                 
                 temp = data[front_idx:post_idx] 
-                x_move = temp["x_move"].to_numpy()
-                y_move = temp["y_move"].to_numpy()
-                z_move = temp["z_move"].to_numpy()
+                # x_move = temp["x_move"].to_numpy()
+                # y_move = temp["y_move"].to_numpy()
+                # z_move = temp["z_move"].to_numpy()
                 HR = temp["heart_rate"].to_numpy()
                 
                 # activity = temp["step_count"].to_numpy()
