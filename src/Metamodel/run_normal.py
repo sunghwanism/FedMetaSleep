@@ -59,7 +59,7 @@ def run_model(num=1):
     #
     train_set, validation_set = create_train_val_loader(database, batch_size, length=30,
                                                         meta_train_client_idx_lst=[num], FLtrain=True)
-    early_stop = utils.EarlyStopping(patience=15)
+    early_stop = EarlyStopping(patience=15)
 
     if type(num) == list:
         train = train_set
