@@ -35,9 +35,14 @@ random.seed(0)
 np.random.seed(0)
 torch.cuda.manual_seed_all(0)
 
+import time
+import datetime
+
 
 
 def run_model(num=1):
+
+    start = time.time()
     # Initialize seed if specified (might slow down the model)
     seed = 0 # Client 9
     # num = list(range(10,30))
@@ -205,6 +210,12 @@ def run_model(num=1):
                     early_epoch = epoch
             # break
     print("Best f1: ", best_f1)
+
+    end = time.time()
+    sec = end - start
+    print("Total Trining Time")
+    result_time = str(datetime.timedelta(seconds=sec)).split(".")
+    print(result_time[0])
 
 
         
