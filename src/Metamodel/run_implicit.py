@@ -27,6 +27,7 @@ from data.dataloader import create_train_val_loader
 import energy
 import meta
 import models
+import numpy as np
 import train
 import utils
 
@@ -34,8 +35,26 @@ from utils import config
 
 from models.depthwiseNet import DepthNet
 
+import torch.backends.cudnn as cudnn
+import random
+
+import time
+import datetime
+
+torch.manual_seed(0)
+torch.cuda.manual_seed(0)
+torch.cuda.manual_seed_all(0)
+np.random.seed(0)
+cudnn.benchmark = False
+cudnn.deterministic = True
+random.seed(0)
+np.random.seed(0)
+torch.cuda.manual_seed_all(0)
+
 
 def run_implicit(raytune=False):
+
+    start = time.time()
         
     # Initialize seed if specified (might slow down the model)
     seed = 1000
@@ -43,11 +62,11 @@ def run_implicit(raytune=False):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print("Using device:", device)
     
-    batch_size = 1024
+    batch_size = 256
     database = "../../data/new"
 
     # Create the training, validation and test dataloader
-    train_loader, valid_loader = create_train_val_loader(database, batch_size, length=30, meta_train_client_idx_lst=[12,14,16,18,20])
+    train_loader, valid_loader = create_train_val_loader(database, batch_size, length=30, meta_train_client_idx_lst=list(range(11,30)))
 
     # Initialise the model
     # NOTE: Hard-coded output_dim as all datasets considered so far have 10 outputs
@@ -65,14 +84,14 @@ def run_implicit(raytune=False):
     nsa_steps = 500
     nsa_alpha = 0.0003
     
-    init_l2 = 1e-02
+    init_l2 = 1e-01
     inner_init = "fixed_seed"
     optimizer_outer_type = "adam"
-    lr_outer = 0.0001
-    lr_inner = 0.001
+    lr_outer = 0.001
+    lr_inner = 0.0001
     
-    steps_inner = 3000
-    steps_outer = 100
+    steps_inner = 2000
+    steps_outer = 50
     
     optimizer_inner_type = "sgd_nesterov"
     ############################################################
@@ -167,7 +186,7 @@ def run_implicit(raytune=False):
             
             if best_f1 < valid_f1:
                 best_f1 = valid_f1
-                torch.save(model.state_dict(), os.path.join("log",f"best_model_{meta_method}.pt"))
+                torch.save(model.state_dict(), os.path.join("log",f"best_model_{meta_method}_retry.pt"))
 
         # Logging
         if raytune:
@@ -217,7 +236,12 @@ def run_implicit(raytune=False):
     # Final Testing
     logging.info("Final training on full dataset (train + valid)")
     print(f"Best f1score", best_f1)
-    
+    end = time.time()
+    sec = end - start
+    print("Total Trining Time")
+    result_time = str(datetime.timedelta(seconds=sec)).split(".")
+    print(result_time[0])
+
     return results, model, hyperparams
 
     # # Concatenate the full dataset (train + valid)
@@ -273,7 +297,7 @@ if __name__ == '__main__':
     # Store results, configuration and model state as pickle
     # results['cfg'], results['model'], results['hyperparameter'] = cfg, model.state_dict(), hyperparams.state_dict()
     results['model'], results['hyperparameter'] = model.state_dict(), hyperparams.state_dict()
-
+    print(results["hyperparameter"])
     # Zip the tensorboard logging results and remove the folder to save space
     # config.writer.close()
     # path_tensorboard = os.path.join(LOG_DIR, "_tensorboard")
