@@ -20,7 +20,7 @@ from src.Metamodel.data.dataloader import create_train_val_loader
 from torch.utils.data import random_split, DataLoader
 
 from sklearn.preprocessing import LabelBinarizer
-from sklearn.metrics import confusion_matrix, auc, roc_auc_score, f1_score, classification_report
+from sklearn.metrics import confusion_matrix, auc, roc_auc_score, f1_score, classification_report, cohen_kappa_score
 from torchmetrics.classification import MulticlassAUROC
 
 
@@ -48,8 +48,8 @@ def get_round_loss_score(DATABASE, MODELBASE, basemodel, device, client, weighte
         
     # train_result_dic = {"loss": [], "acc": [], "f1": [], "auc_0": [], "auc_1": [], "auc_2": [], "confusion_matrix": []}
     # test_result_dic = {"loss": [], "acc": [], "f1": [], "auc_0": [], "auc_1": [], "auc_2": [], "confusion_matrix": []}
-    train_result_dic = {"loss": [], "acc": [], "f1": [], "auc": [], "confusion_matrix": []}
-    test_result_dic = {"loss": [], "acc": [], "f1": [], "auc": [], "confusion_matrix": []}
+    train_result_dic = {"loss": [], "acc": [], "f1": [], "auc": [], "confusion_matrix": [], "kappa":[]}
+    test_result_dic = {"loss": [], "acc": [], "f1": [], "auc": [], "confusion_matrix": [], "kappa":[]}
     
     if all_round:
         for round_model in models:
@@ -110,6 +110,7 @@ def get_round_loss_score(DATABASE, MODELBASE, basemodel, device, client, weighte
                 train_result_dic["f1"].append(f1score)
                 train_result_dic["auc"].append(auc.numpy())
                 train_result_dic["confusion_matrix"].append(confusion_matrix(train_pred, train_real))
+                train_result_dic["kappa"].append(cohen_kappa_score(train_pred, train_real))
                 # train_result_dic["auc_0"].append(roc_auc_ovr_0)
                 # train_result_dic["auc_1"].append(roc_auc_ovr_1)
                 # train_result_dic["auc_2"].append(roc_auc_ovr_2)
@@ -142,6 +143,7 @@ def get_round_loss_score(DATABASE, MODELBASE, basemodel, device, client, weighte
                 test_result_dic["f1"].append(f1score)
                 test_result_dic["auc"].append(auc.numpy())
                 test_result_dic["confusion_matrix"].append(confusion_matrix(test_pred, test_real))
+                test_result_dic["kappa"].append(cohen_kappa_score(test_pred, test_real))
                 
     else:
         basemodel.eval()
@@ -186,6 +188,7 @@ def get_round_loss_score(DATABASE, MODELBASE, basemodel, device, client, weighte
             train_result_dic["f1"].append(f1score)
             train_result_dic["auc"].append(auc.numpy())
             train_result_dic["confusion_matrix"].append(confusion_matrix(train_pred, train_real))
+            train_result_dic["kappa"].append(cohen_kappa_score(train_pred, train_real))
 
         with torch.no_grad():
             for data in client_test_loader:
@@ -214,6 +217,7 @@ def get_round_loss_score(DATABASE, MODELBASE, basemodel, device, client, weighte
             test_result_dic["f1"].append(f1score)
             test_result_dic["auc"].append(auc.numpy())
             test_result_dic["confusion_matrix"].append(confusion_matrix(test_pred, test_real))
+            test_result_dic["kappa"].append(cohen_kappa_score(test_pred, test_real))
             
     return train_result_dic, test_result_dic
 
