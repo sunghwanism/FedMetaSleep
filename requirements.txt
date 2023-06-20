@@ -58,3 +58,4 @@ torchvision>=0.14.1
 torchmetrics
 higher
 tensorboard
+ray==1.5.1
