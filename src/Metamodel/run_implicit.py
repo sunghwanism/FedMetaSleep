@@ -87,10 +87,10 @@ def run_implicit(raytune=False):
     init_l2 = 1e-01
     inner_init = "fixed_seed"
     optimizer_outer_type = "adam"
-    lr_outer = 0.001
-    lr_inner = 0.0001
+    lr_outer = 0.0001
+    lr_inner = 0.00001
     
-    steps_inner = 2000
+    steps_inner = 500
     steps_outer = 50
     
     optimizer_inner_type = "sgd_nesterov"
@@ -186,7 +186,7 @@ def run_implicit(raytune=False):
             
             if best_f1 < valid_f1:
                 best_f1 = valid_f1
-                torch.save(model.state_dict(), os.path.join("log",f"best_model_{meta_method}_retry.pt"))
+                torch.save(model.state_dict(), os.path.join("log",f"best_model_{meta_method}_retry2.pt"))
 
         # Logging
         if raytune:
@@ -297,7 +297,7 @@ if __name__ == '__main__':
     # Store results, configuration and model state as pickle
     # results['cfg'], results['model'], results['hyperparameter'] = cfg, model.state_dict(), hyperparams.state_dict()
     results['model'], results['hyperparameter'] = model.state_dict(), hyperparams.state_dict()
-    print(results["hyperparameter"])
+    # print(results["hyperparameter"])
     # Zip the tensorboard logging results and remove the folder to save space
     # config.writer.close()
     # path_tensorboard = os.path.join(LOG_DIR, "_tensorboard")
