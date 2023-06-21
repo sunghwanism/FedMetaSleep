@@ -53,12 +53,17 @@ if __name__ == "__main__":
     # load model
     flmodel = DepthNet(lengths=30, patch_size=30, in_chans=2, embed_dim=256, norm_layer=None, output_dim=args.class_num)
         
-    # pre_trained = torch.load("../Metamodel/log/best_model_t1t2.pt", map_location=device)
-    # model.load_state_dict(pre_trained)
+    pre_trained = torch.load("../Metamodel/log/best_model_t1t2.pt", map_location=device)
+    flmodel.load_state_dict(pre_trained)
+
+    for param in flmodel.parameters():
+        param.requires_grad = True
 
     # create trainer
     trainer = FedMetaTrainer(flmodel, args)
     aggregator = FedMeta_aggregator(flmodel, args)
+
+
 
     # start training
     fedml_runner = FedMLRunner(args, device, dataset, flmodel, trainer, aggregator)
