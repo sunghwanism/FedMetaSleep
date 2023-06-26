@@ -26,11 +26,11 @@ train_args:
   client_id_list:
   client_num_in_total: 10
   client_num_per_round: 10
-  comm_round: 5
+  comm_round: 50
   epochs: 1
-  batch_size: 64
+  batch_size: 128
   client_optimizer: sgd
-  learning_rate: 0.001
+  learning_rate: 0.01
   weight_decay: 0.0001
 
 validation_args:
