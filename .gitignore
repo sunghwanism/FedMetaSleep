@@ -5,3 +5,4 @@ __pycache__/utils.cpython-38.pyc
 .vscode/
 **/.DS*
 src/FedMeta/model_file_cache/*
+**/**/*cpython*
